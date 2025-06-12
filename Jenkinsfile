@@ -61,7 +61,8 @@ pipeline {
 						try {
 							sh '''
 								echo "Destroying EKS cluster from YAML..."
-								eksctl delete cluster --name ${CLUSTER_NAME} -f cluster.yaml
+								# eksctl delete cluster -f cluster.yaml
+								eksctl delete cluster --name ${CLUSTER_NAME}
 							'''
 						} catch (exception) {
 							echo "❌ Failed to destroy EKS cluster: ${exception}"
