@@ -15,44 +15,44 @@ pipeline {
             steps {
                 git branch: 'main',
                     credentialsId: 'Github',
-                    url: 'https://github.com/prashant-aggarwal/awr-devops-eks-cluster-destroy.git'
+                    url: 'https://github.com/prashant-aggarwal/awr-devops-cap-eks-destroy-eksctl.git'
             }
         }
 
-		// Stage 1 - Install kubectl
+		// Stage 2 - Install kubectl
         stage('Install kubectl') {
             steps {
                 sh '''
-                echo "Installing kubectl..."
-                curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.31.2/2024-11-15/bin/linux/amd64/kubectl
-				chmod +x ./kubectl
-				mkdir -p $HOME/bin
-				cp ./kubectl $HOME/bin/kubectl
-				export PATH=$HOME/bin:$PATH
-				kubectl version --client
+					echo "Installing kubectl..."
+					curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.31.2/2024-11-15/bin/linux/amd64/kubectl
+					chmod +x ./kubectl
+					mkdir -p $HOME/bin
+					cp ./kubectl $HOME/bin/kubectl
+					export PATH=$HOME/bin:$PATH
+					kubectl version --client
                 '''
             }
         }
 
-        // Stage 2 - Install eksctl
+        // Stage 3 - Install eksctl
         stage('Install eksctl') {
             steps {
                 sh '''
-                echo "Installing eksctl..."
-                export ARCH=amd64
-                export PLATFORM=$(uname -s)_$ARCH
-                curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
-                tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp
-                mkdir -p $HOME/bin
-                mv /tmp/eksctl $HOME/bin/eksctl
-                chmod +x $HOME/bin/eksctl
-                export PATH=$HOME/bin:$PATH
-                eksctl version
+					echo "Installing eksctl..."
+					export ARCH=amd64
+					export PLATFORM=$(uname -s)_$ARCH
+					curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
+					tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp
+					mkdir -p $HOME/bin
+					mv /tmp/eksctl $HOME/bin/eksctl
+					chmod +x $HOME/bin/eksctl
+					export PATH=$HOME/bin:$PATH
+					eksctl version
                 '''
             }
         }
 		
-		// Stage 3 - Destroy EKS Cluster using cluster.yaml
+		// Stage 4 - Destroy EKS Cluster
         stage('Destroy EKS Cluster') {
             steps {
 				script {
@@ -60,8 +60,8 @@ pipeline {
 				withAWS(region: "${env.AWS_REGION}", credentials: 'AWS') {
 						try {
 							sh '''
-							echo "Destroying EKS cluster from YAML..."
-							eksctl delete cluster -f cluster.yaml
+								echo "Destroying EKS cluster from YAML..."
+								eksctl delete cluster --name ${CLUSTER_NAME} -f cluster.yaml
 							'''
 						} catch (exception) {
 							echo "❌ Failed to destroy EKS cluster: ${exception}"
