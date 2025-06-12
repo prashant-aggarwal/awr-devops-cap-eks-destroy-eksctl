@@ -24,4 +24,4 @@ Either use cluster.yaml or cluster name in the Jenkinsfile for destruction of EK
 10. Check the Console Output associated with the lastest job for verification.
 11. Also verify the CloudFormation stack progress and/or EKS cluster destruction progress in the AWS management console in the selected region.
 12. Additionally, you can setup a Webhook on the repository and enable **GitHub hook trigger for GITScm polling** option in the pipeline for automatic pipeline triggers whenever changes are pushed to the repository.
-13. Cluster Name can be added as a Paramter in the pipeline to make the eksctl destoy command independent of cluster.yaml file.
+13. Cluster Name can be added as a Parameter in the pipeline to make the eksctl destoy command independent of cluster.yaml file.
